@@ -158,7 +158,7 @@ int main(void)
 	GPIOB->MODER &= ~(GPIO_MODER_MODER11);
 	GPIOB->MODER |= 0x2 << GPIO_MODER_MODER11_Pos;
 	
-	GPIOB->MODER &= GPIO_MODER_MODER13;
+	GPIOB->MODER &= ~(GPIO_MODER_MODER13); // Fixed this
 	GPIOB->MODER |= 0x2 << GPIO_MODER_MODER13_Pos;
 	
 	// 0001
@@ -201,7 +201,7 @@ int main(void)
 	I2C2->TIMINGR |= 0x4 << I2C_TIMINGR_SCLDEL_Pos;
 	
 	I2C2->CR1 |= I2C_CR1_PE;
-	I2C2->CR2 = 0;
+	/*I2C2->CR2 = 0;
 	I2C2->CR2 &= ~(I2C_CR2_SADD);//~(0xFE); // 0000 1111 1110
 	I2C2->CR2 |= 0x6B << 1; 
 	
@@ -214,7 +214,7 @@ int main(void)
 	while(1){
 		if((I2C2->ISR & I2C_ISR_TXIS) != 0){break;}
 		if((I2C2->ISR & I2C_ISR_NACKF) != 0){break;}
-					turn_on_LED('b');
+					//turn_on_LED('b');
 	}
 	turn_on_LED('o');
 	
@@ -249,9 +249,114 @@ int main(void)
 	
 	while(!(I2C2->ISR & I2C_ISR_TC)){}
 	I2C2->CR2 |= I2C_CR2_STOP;
+*/				
+	// PART 2 - GYROSCOPE -------------------------------------------------------------------------------------------------------------------
+	// 0000 1011
+	I2C2->CR2 = 0;
+	I2C2->CR2 &= ~(I2C_CR2_SADD);//~(0xFE); // 0000 1111 1110
+	I2C2->CR2 |= 0x6B << 1; 
+	
+	I2C2->CR2 &= ~(I2C_CR2_NBYTES);
+	I2C2->CR2 |= 0x2 << (I2C_CR2_NBYTES_Pos);
+	
+	I2C2->CR2 &= ~(I2C_CR2_RD_WRN);
+	I2C2->CR2 |= I2C_CR2_START;
+
+	while(1){
+		if((I2C2->ISR & I2C_ISR_TXIS) != 0){break;}
+		if((I2C2->ISR & I2C_ISR_NACKF) != 0){break;}
+					//turn_on_LED('b');
+	}
+	if(I2C2->ISR & I2C_ISR_NACKF){
+		//SOME ERROR
+		turn_on_LED('r');
+	}
+	I2C2->TXDR = 0x20; // Addres CR
+
+	while(1){
+		if((I2C2->ISR & I2C_ISR_TXIS) != 0){break;}
+		if((I2C2->ISR & I2C_ISR_NACKF) != 0){break;}
+	}
+	if(I2C2->ISR & I2C_ISR_NACKF){
+		//SOME ERROR
+		turn_on_LED('r');
+	}
+
+	I2C2->TXDR = 0x0B;
+	while(!(I2C2->ISR & I2C_ISR_TC)){}
+	I2C2->CR2 |= I2C_CR2_STOP;
+	
+
+// X AND Y CHECKING ----------------------------------------------------------------------------------------------------
 		
-	while(1){}
+	int16_t x = 0; // x axis
+	int16_t y = 0; // y axis
+	while(1){
+		HAL_Delay(100);
+		
+		I2C2->CR2 = 0;
+		I2C2->CR2 &= ~(I2C_CR2_SADD);//~(0xFE); // 0000 1111 1110
+		I2C2->CR2 |= 0x6B << 1; 
+	
+		I2C2->CR2 &= ~(I2C_CR2_NBYTES);
+		I2C2->CR2 |= 0x1 << (I2C_CR2_NBYTES_Pos);
+	
+		I2C2->CR2 &= ~(I2C_CR2_RD_WRN);
+		I2C2->CR2 |= I2C_CR2_START;
+
+		while(1){
+			if((I2C2->ISR & I2C_ISR_TXIS) != 0){break;}
+			if((I2C2->ISR & I2C_ISR_NACKF) != 0){break;}
+					//turn_on_LED('b');
+		}
+		if(I2C2->ISR & I2C_ISR_NACKF){
+			//SOME ERROR
+			turn_on_LED('r');
+		}
+	I2C2->TXDR = 0xA8;
+	
+	while(!(I2C2->ISR & I2C_ISR_TC)){}
+	I2C2->CR2 &= ~(0xFE); // 0000 1111 1110
+	I2C2->CR2 |= 0x6B << 1; 
+	
+	I2C2->CR2 &= ~(I2C_CR2_NBYTES);
+	I2C2->CR2 |= 0x2 << (I2C_CR2_NBYTES_Pos);
+	
+	I2C2->CR2 |= I2C_CR2_RD_WRN;
+	I2C2->CR2 |= I2C_CR2_START;
+		
+	while(1){		
+		if(I2C2->ISR & I2C_ISR_RXNE){break;}
+		if(I2C2->ISR & I2C_ISR_NACKF){break;}}
+	if(I2C2->ISR & I2C_ISR_NACKF){
+		//SOME ERROR
+		turn_on_LED('r');
+	}
+	// Check to make sure it gets here
+				turn_on_LED('b');
+	
+	// Address is supposed to automatically change according to datasheets.
+	x = I2C2->RXDR;
+	while(1){		
+		if(I2C2->ISR & I2C_ISR_RXNE){break;}
+		if(I2C2->ISR & I2C_ISR_NACKF){break;}}
+	if(I2C2->ISR & I2C_ISR_NACKF){
+		//SOME ERROR
+		turn_on_LED('r');
+	}
+		x |= I2C2->RXDR << 8; 
+		while(!(I2C2->ISR & I2C_ISR_TC)){}
+			I2C2->CR2 |= I2C_CR2_STOP;
+			
+		if(x > 0){
+			turn_on_LED('o');
+		}
+		else {
+			turn_on_LED('g');
+		}
+	}
 }
+
 
 /**
   * @brief System Clock Configuration
