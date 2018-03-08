@@ -83,15 +83,19 @@ int turn_off_LED(char ch)
 		switch(ch)
 	{
 		case 'r':
+		case 'R':
 			GPIOC->BSRR |= GPIO_BSRR_BR_6;
 			break;
 		case 'g':
+		case 'G':
 			GPIOC->BSRR |= GPIO_BSRR_BR_9;
 			break;
 		case 'b':
+		case 'B':
 			GPIOC->BSRR |= GPIO_BSRR_BR_7;
 			break;
 		case 'o':
+		case 'O':
 			GPIOC->BSRR |= GPIO_BSRR_BR_8;
 			break;
 		default:
@@ -105,15 +109,19 @@ int turn_on_LED(char ch)
 		switch(ch)
 	{
 		case 'r':
+		case 'R':
 			GPIOC->BSRR |= GPIO_BSRR_BS_6;
 			break;
 		case 'g':
+		case 'G':
 			GPIOC->BSRR |= GPIO_BSRR_BS_9;
 			break;
 		case 'b':
+		case 'B':
 			GPIOC->BSRR |= GPIO_BSRR_BS_7;
 			break;
 		case 'o':
+		case 'O':
 			GPIOC->BSRR |= GPIO_BSRR_BS_8;
 			break;
 		default:
@@ -272,7 +280,6 @@ int main(void)
 		turn_on_LED('r');
 	}
 	I2C2->TXDR = 0x20; // Addres CR
-
 	while(1){
 		if((I2C2->ISR & I2C_ISR_TXIS) != 0){break;}
 		if((I2C2->ISR & I2C_ISR_NACKF) != 0){break;}
@@ -288,7 +295,6 @@ int main(void)
 	
 
 // X AND Y CHECKING ----------------------------------------------------------------------------------------------------
-		
 	int16_t x = 0; // x axis
 	int16_t y = 0; // y axis
 	while(1){
@@ -332,8 +338,6 @@ int main(void)
 		//SOME ERROR
 		turn_on_LED('r');
 	}
-	// Check to make sure it gets here
-				turn_on_LED('b');
 	
 	// Address is supposed to automatically change according to datasheets.
 	x = I2C2->RXDR;
@@ -350,9 +354,11 @@ int main(void)
 			
 		if(x > 0){
 			turn_on_LED('o');
+			turn_off_LED('g');
 		}
 		else {
 			turn_on_LED('g');
+			turn_off_LED('o');
 		}
 	}
 }
