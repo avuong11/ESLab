@@ -39,6 +39,10 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 
+typedef unsigned int bool;
+#define true 1
+#define false 0
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -52,32 +56,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-
-void initLeds(void){
-		RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for LEDs
-	
-	//Set PC6-PC9 to General purpose in/out
-	GPIOC->MODER &= ~(0xFF << GPIO_MODER_MODER6_Pos);
-	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER6_Pos;
-	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER7_Pos;
-	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER8_Pos;
-	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER9_Pos;
-	
-		//Set PC6-PC9 to push-pull 
-	GPIOC->OTYPER &= ~(0xF << 6); //Clear PC6-PC9 for push-pull mode 
-	
-	//Set PC6-PC9 to low_speed mode
-	GPIOC->OSPEEDR &= ~(0xFF << GPIO_OSPEEDR_OSPEEDR6_Pos); // Clear PC6-PC9 for low-speed mode
-	
-		//Set no pull up/down for PC6-PC9
-	GPIOC->PUPDR &= ~(0xFF << GPIO_PUPDR_PUPDR6_Pos);
-	
-		// Initialize LED states
-
-	
-}
-
-
 int turn_off_LED(char ch)
 {
 		switch(ch)
@@ -129,6 +107,92 @@ int turn_on_LED(char ch)
 	}
 	return 1;
 }
+
+void initLeds(void){
+		RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for LEDs
+	
+	//Set PC6-PC9 to General purpose in/out
+	GPIOC->MODER &= ~(0xFF << GPIO_MODER_MODER6_Pos);
+	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER6_Pos;
+	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER7_Pos;
+	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER8_Pos;
+	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER9_Pos;
+	
+		//Set PC6-PC9 to push-pull 
+	GPIOC->OTYPER &= ~(0xF << 6); //Clear PC6-PC9 for push-pull mode 
+	
+	//Set PC6-PC9 to low_speed mode
+	GPIOC->OSPEEDR &= ~(0xFF << GPIO_OSPEEDR_OSPEEDR6_Pos); // Clear PC6-PC9 for low-speed mode
+	
+		//Set no pull up/down for PC6-PC9
+	GPIOC->PUPDR &= ~(0xFF << GPIO_PUPDR_PUPDR6_Pos);
+	
+	// Initialize LED states
+	turn_off_LED('o');
+	turn_off_LED('b');
+	turn_off_LED('r');
+	turn_off_LED('g');
+
+	
+}
+
+void Setup_ADC()
+{
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN; //Enable GPIOB for ADC. Use PB0 for ADC input
+	
+	//Set PB0 to General purpose in/out
+	GPIOB->MODER |= GPIO_MODER_MODER0;
+	
+		//Set no pull up/down for PB0
+	GPIOB->PUPDR &= ~GPIO_PUPDR_PUPDR0;
+	
+	// Enable ADC
+	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+	
+	// Set resolution to 8-bit
+	ADC1->CFGR1 &= ~ADC_CFGR1_RES;
+	ADC1->CFGR1 |= ADC_CFGR1_RES_1;
+	
+	// Set Cont. Conversion mode
+	ADC1->CFGR1 |= ADC_CFGR1_CONT;
+	
+	// Hardware triger disabled
+	ADC1->CFGR1 &= ~ADC_CFGR1_EXTEN;
+	
+	// Select/Enable the input channel 8 for PB0
+	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
+	ADC1->CHSELR |= ADC_CHSELR_CHSEL8;
+	
+	// Calibrate
+	/*ADC1->CR |= ADC_CR_ADCAL;
+	while(ADC1->CR & ADC_CR_ADCAL){}
+	
+	
+	ADC1->ISR |= ADC_ISR_ADRDY;
+	ADC1->CR |= ADC_CR_ADEN;
+	while((ADC1->ISR & ADC_ISR_ADRDY) == 0){}
+	
+	ADC1->CR |= ADC_CR_ADSTART;*/
+	
+	if((ADC1->CR & ADC_CR_ADEN) != 0){
+		ADC1->CR |= ADC_CR_ADDIS;
+	}
+	while((ADC1->CR & ADC_CR_ADEN) != 0){}
+	ADC1->CFGR1 &= ~ADC_CFGR1_DMAEN;
+	ADC1->CR |= ADC_CR_ADCAL;
+	while((ADC1->CR & ADC_CR_ADCAL) != 0){}
+		
+	if((ADC1->ISR & ADC_ISR_ADRDY) != 0){
+		ADC1->ISR |= ADC_ISR_ADRDY;
+	}
+	ADC1->CR |= ADC_CR_ADEN;
+	while((ADC1->ISR & ADC_ISR_ADRDY) == 0){}
+	ADC1->CR |= ADC_CR_ADSTART;
+	
+}
+
+
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -149,6 +213,15 @@ int main(void)
   SystemClock_Config();
 
 	initLeds();
+	Setup_ADC();
+	uint8_t threshold[4] = {32, 64, 128, 200};
+	while(true)
+	{
+		(ADC1->DR > 32) ? turn_on_LED('o') : turn_off_LED('o');
+		(ADC1->DR > 64) ? turn_on_LED('b') : turn_off_LED('b');	
+		(ADC1->DR > 128) ? turn_on_LED('g') : turn_off_LED('g');	
+		(ADC1->DR > 200) ? turn_on_LED('r') : turn_off_LED('r');			
+	}
 	
 }
 
