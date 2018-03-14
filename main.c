@@ -138,16 +138,16 @@ void initLeds(void){
 
 void Setup_ADC()
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOBEN; //Enable GPIOB for ADC. Use PB0 for ADC input
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOB for ADC. Use PB0 for ADC input
 	
 	//Set PB0 to General purpose in/out
-	GPIOB->MODER |= GPIO_MODER_MODER0;
+	GPIOC->MODER |= GPIO_MODER_MODER0;
 	
 		//Set no pull up/down for PB0
-	GPIOB->PUPDR &= ~GPIO_PUPDR_PUPDR0;
+	GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR0;
 	
 	// Enable ADC
-	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+	RCC->APB2ENR |= RCC_APB2ENR_ADCEN;
 	
 	// Set resolution to 8-bit
 	ADC1->CFGR1 &= ~ADC_CFGR1_RES;
@@ -161,10 +161,10 @@ void Setup_ADC()
 	
 	// Select/Enable the input channel 8 for PB0
 	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
-	ADC1->CHSELR |= ADC_CHSELR_CHSEL8;
+	ADC1->CHSELR |= ADC_CHSELR_CHSEL10;
 	
 	// Calibrate
-	/*ADC1->CR |= ADC_CR_ADCAL;
+	ADC1->CR |= ADC_CR_ADCAL;
 	while(ADC1->CR & ADC_CR_ADCAL){}
 	
 	
@@ -172,9 +172,9 @@ void Setup_ADC()
 	ADC1->CR |= ADC_CR_ADEN;
 	while((ADC1->ISR & ADC_ISR_ADRDY) == 0){}
 	
-	ADC1->CR |= ADC_CR_ADSTART;*/
+	ADC1->CR |= ADC_CR_ADSTART;
 	
-	if((ADC1->CR & ADC_CR_ADEN) != 0){
+	/*if((ADC1->CR & ADC_CR_ADEN) != 0){
 		ADC1->CR |= ADC_CR_ADDIS;
 	}
 	while((ADC1->CR & ADC_CR_ADEN) != 0){}
@@ -187,7 +187,7 @@ void Setup_ADC()
 	}
 	ADC1->CR |= ADC_CR_ADEN;
 	while((ADC1->ISR & ADC_ISR_ADRDY) == 0){}
-	ADC1->CR |= ADC_CR_ADSTART;
+	ADC1->CR |= ADC_CR_ADSTART;*/
 	
 }
 
