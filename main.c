@@ -191,7 +191,21 @@ void Setup_ADC()
 	
 }
 
+void Setup_DAC(void){
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	RCC->APB1ENR |= RCC_APB1ENR_DACEN;
+		//Set PB0 to General purpose in/out
+	GPIOA->MODER |= GPIO_MODER_MODER4;
+	
+		//Set no pull up/down for PB0
+	GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR4;
+	
+	DAC->CR |= DAC_CR_TSEL1;
+	//DAC->CR |= DAC_CR_TEN1;
+	//DAC->SWTRIGR |= DAC_SWTRIGR_SWTRIG1;
+	DAC->CR |= DAC_CR_EN1;	
 
+}
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -213,14 +227,22 @@ int main(void)
   SystemClock_Config();
 
 	initLeds();
-	Setup_ADC();
-	uint8_t threshold[4] = {32, 64, 128, 200};
+	//Setup_ADC();
+	Setup_DAC();
+	const uint8_t sine_table[32] = {127,151,175,197,216,232,244,251,254,251,244,
+	232,216,197,175,151,127,102,78,56,37,21,9,2,0,2,9,21,37,56,78,102};
+	//uint8_t count = 0;
 	while(true)
-	{
+	{/*
 		(ADC1->DR > 32) ? turn_on_LED('o') : turn_off_LED('o');
 		(ADC1->DR > 64) ? turn_on_LED('b') : turn_off_LED('b');	
 		(ADC1->DR > 128) ? turn_on_LED('g') : turn_off_LED('g');	
-		(ADC1->DR > 200) ? turn_on_LED('r') : turn_off_LED('r');			
+		(ADC1->DR > 200) ? turn_on_LED('r') : turn_off_LED('r');		*/
+		//int i;
+		for(int i = 0; i < 32; i++){
+			HAL_Delay(1);
+			DAC->DHR8R1 = sine_table[i];
+		}
 	}
 	
 }
