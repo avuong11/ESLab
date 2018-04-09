@@ -28,6 +28,39 @@ void motor_init(void) {
     ADC_init();
 }
 
+void init_GPIO_inout(void)
+{
+	// Setup PA4 for Timer 14 CH1
+	GPIOA->MODER |= GPIO_MODER_MODER4_1;
+	GPIOA->MODER &= ~(GPIO_MODER_MODER4_0);
+	
+	GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_4);
+	GPIOA->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR4);
+	GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPDR4);
+	
+	GPIOA->AFR[0] &= ~(GPIO_AFRL_AFSEL4);
+	GPIOA->AFR[0] |= (0x4 << GPIO_AFRL_AFSEL4_Pos); // 0100
+	
+	// Input and Output pins for direction
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;  
+	GPIOC->MODER |= 0x01 << GPIO_MODER_MODER7_Pos;
+  //GPIOC->MODER |= 0x01 << GPIO_MODER_MODER1_Pos;
+
+	GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_7);
+	//GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_1);
+	
+	GPIOC->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR7);
+	//GPIOC->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR1);
+	
+	GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR7);
+	//GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR1);
+	
+	GPIOC->BSRR |= GPIO_BSRR_BS_7; 
+	//GPIOC->ODR ^= GPIO_ODR_1;
+	//GPIOC->ODR ^= GPIO_ODR_8; 
+	
+}
+
 // Sets up the PWM and direction signals to drive the H-Bridge
 void pwm_init(void) {
 
@@ -43,6 +76,8 @@ void pwm_init(void) {
      *       running in reverse, either swap the direction pins or the
      *       encoder pins. (we'll only be using forward speed in this lab)
      */
+	
+	  init_GPIO_inout();
 
     // Set up PWM timer
     RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
@@ -68,11 +103,40 @@ void pwm_setDutyCycle(uint8_t duty) {
     }
 }
 
+void timer3_init(void)
+{
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+	
+	// Pins PB4 and PB5
+	GPIOB->MODER |= GPIO_MODER_MODER4_1;
+	GPIOB->MODER &= ~(GPIO_MODER_MODER4_0);
+	
+	GPIOB->MODER |= GPIO_MODER_MODER5_1;
+	GPIOB->MODER &= ~(GPIO_MODER_MODER5_0);
+	
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_4);
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR4);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR4);
+	
+	GPIOB->OTYPER &= ~(GPIO_OTYPER_OT_5);
+	GPIOB->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR5);
+	GPIOB->PUPDR &= ~(GPIO_PUPDR_PUPDR5);
+	
+	GPIOB->AFR[0] &= ~(GPIO_AFRL_AFSEL4);
+	GPIOB->AFR[0] |= (0x1 << GPIO_AFRL_AFSEL4_Pos); // 0001
+	
+	GPIOB->AFR[0] &= ~(GPIO_AFRL_AFSEL5);
+	GPIOB->AFR[0] |= (0x1 << GPIO_AFRL_AFSEL5_Pos); // 0001
+	
+}
+
 // Sets up encoder interface to read motor speed
 void encoder_init(void) {
 
     /// TODO: Set up encoder input pins (TIMER 3 CH1 and CH2)
 
+		timer3_init();
+	
     /* Hint: MAKE SURE THAT YOU USE 5V TOLERANT PINS FOR THE ENCODER INPUTS!
      *       You'll fry the processor otherwise, read the lab to find out why!
      */
@@ -104,8 +168,8 @@ void encoder_init(void) {
      *       and target speed. (Example: 200 RPM = 400 Encoder count for interrupt period)
      *       This is so your system will match the lab solution
      */
-         TIM6->PSC = 0xFFFF; // TODO: Change this!
-         TIM6->ARR = 0xFFFF; // TODO: Change this!
+         TIM6->PSC = 5; // TODO: Change this!
+         TIM6->ARR = 29000; // TODO: Change this!
 
     TIM6->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
     TIM6->CR1 |= TIM_CR1_CEN;               // Enable Timer
@@ -133,6 +197,18 @@ void ADC_init(void) {
 
     /// TODO: Configure a pin for ADC input (used for current monitoring)
 
+		// PA0
+		//Set PA0 to General purpose in/out
+//		GPIOA->MODER |= GPIO_MODER_MODER0;
+	
+		//Set no pull up/down for PA0
+//		GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR0;
+	
+	
+	
+	
+	
+	
     // Configure ADC to 8-bit continuous-run mode, (asynchronous clock mode)
     RCC->APB2ENR |= RCC_APB2ENR_ADCEN;
 
@@ -140,7 +216,7 @@ void ADC_init(void) {
     ADC1->CFGR1 |= (ADC_CFGR1_CONT);        // Set to continuous mode and 12-bit resolution
 
     /// TODO: Enable the proper channel for the ADC pin you are using
-    ADC1->CHSELR |= 0; // Change this!
+    ADC1->CHSELR |= ADC_CHSELR_CHSEL0; // Change this!
 
     ADC1->CR = 0;
     ADC1->CR |= ADC_CR_ADCAL;               // Perform self calibration
@@ -171,7 +247,12 @@ void PI_update(void) {
      */
 
     /// TODO: calculate error signal and write to "error" variable
-
+		// Convert encoder speeds to RPM.
+		int motor_speed_rpm = motor_speed/2;
+		error = target_rpm - motor_speed_rpm;
+		//int target_rpm_count = target_rpm * 3200;
+		//error = target_rpm_count - motor_speed;
+	
     /* Hint: Remember that your calculated motor speed may not be directly in RPM!
      *       You will need to convert the target or encoder speeds to the same units.
      *       I recommend converting to whatever units result in larger values, gives
@@ -180,8 +261,15 @@ void PI_update(void) {
 
 
     /// TODO: Calculate integral portion of PI controller, write to "error_integral" variable
+		error_integral = error_integral + Ki * error;
 
     /// TODO: Clamp the value of the integral to a limited positive range
+		if(error_integral < 0){
+			error_integral = 0;
+		}
+		else if(error_integral > 3200){
+			error_integral = 3200;
+		}
 
     /* Hint: The value clamp is needed to prevent excessive "windup" in the integral.
      *       You'll read more about this for the post-lab. The exact value is arbitrary
@@ -191,7 +279,7 @@ void PI_update(void) {
 
     /// TODO: Calculate proportional portion, add integral and write to "output" variable
 
-    int16_t output = 0; // Change this!
+    int16_t output = (Kp * error + error_integral); // Change this!
 
     /* Because the calculated values for the PI controller are significantly larger than
      * the allowable range for duty cycle, you'll need to divide the result down into
@@ -210,8 +298,15 @@ void PI_update(void) {
      */
 
      /// TODO: Divide the output into the proper range for output adjustment
+		output = output/32;
 
      /// TODO: Clamp the output value between 0 and 100
+	if(output < 0){
+		output = 0;
+	}
+	else if(output > 100){
+		output = 100;
+	}
 
     pwm_setDutyCycle(output);
     duty_cycle = output;            // For debug viewing
