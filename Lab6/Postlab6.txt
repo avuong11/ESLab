@@ -1,0 +1,10 @@
+Andrew Vuong & Michael Mackliet
+Postlab 6
+
+1. The pins can hae multiple analog inputs but only a single analog output since only one thing can drive the output at a time. For inputs, it can write the data to each of the functions, but only the function that needs the data will utilize the data. The other inputs will just ignore it. 
+
+2. The frequency is 250kHz/200samples per cycle = 1.25kHz.
+
+3a. The voltage changes by 3/4096 for each bit which is 0.732mV.
+3b. The value in the ADC would be 1.75V/0.732mV = 2389.
+ 
