@@ -168,8 +168,8 @@ void encoder_init(void) {
      *       and target speed. (Example: 200 RPM = 400 Encoder count for interrupt period)
      *       This is so your system will match the lab solution
      */
-         TIM6->PSC = 5; // TODO: Change this!
-         TIM6->ARR = 29000; // TODO: Change this!
+         TIM6->PSC = 79; // TODO: Change this!
+         TIM6->ARR = 3750; // TODO: Change this!
 
     TIM6->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
     TIM6->CR1 |= TIM_CR1_CEN;               // Enable Timer
