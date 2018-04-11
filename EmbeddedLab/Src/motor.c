@@ -10,7 +10,7 @@
 volatile int16_t error_integral = 0;    // Integrated error signal
 
 /* -------------------------------------------------------------------------------------------------------------
- *  Global Variables for Debug Viewing (no real purpose to be global otherwise)
+ *  Global Variables for Debug Viewing (no real purpose to be global otherwise)f
  * -------------------------------------------------------------------------------------------------------------
  */
 volatile int16_t motor_speed = 0;   // Measured motor speed
@@ -196,18 +196,9 @@ void TIM6_DAC_IRQHandler(void) {
 void ADC_init(void) {
 
     /// TODO: Configure a pin for ADC input (used for current monitoring)
-
-		// PA0
-		//Set PA0 to General purpose in/out
-//		GPIOA->MODER |= GPIO_MODER_MODER0;
-	
-		//Set no pull up/down for PA0
-//		GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR0;
-	
-	
-	
-	
-	
+		RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIO C
+	  GPIOC->MODER |= GPIO_MODER_MODER0; // Set to in/out
+		GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR0; // Set no pull up/down
 	
     // Configure ADC to 8-bit continuous-run mode, (asynchronous clock mode)
     RCC->APB2ENR |= RCC_APB2ENR_ADCEN;
@@ -216,7 +207,9 @@ void ADC_init(void) {
     ADC1->CFGR1 |= (ADC_CFGR1_CONT);        // Set to continuous mode and 12-bit resolution
 
     /// TODO: Enable the proper channel for the ADC pin you are using
-    ADC1->CHSELR |= ADC_CHSELR_CHSEL0; // Change this!
+    // Select/ENable the input channel 8 for PC0
+	  ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
+	  ADC1->CHSELR |= ADC_CHSELR_CHSEL10;
 
     ADC1->CR = 0;
     ADC1->CR |= ADC_CR_ADCAL;               // Perform self calibration
