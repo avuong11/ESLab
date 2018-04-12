@@ -1,0 +1,16 @@
+1. We used 5 for Ki and 3 for Kp. Increasing the constants too much makes the change much faster, but also makes a larger oscillation. We decided on the values we did because the change in speed was quick with minimal oscillation. 
+
+2.  Good -- Improved control loop performance, 
+	Bad -- Wear and tear due to noise, makes tuning more difficult
+	
+3.  Improper Tuning
+		Use tools to see response, test different values
+    Under Filtering
+		Use tools to see if not enough noise is being filtered, increase filter appropriately.
+		If not feasible, consider removing derivative term from PID algorithm
+	Wrong Algorithm
+		Sometimes a more complex PID algorithm should be used for specialized systems, or a simpler
+		one should be used if a complex one is not suited to the problem
+	Over Filtering
+		Use tools to see if signal is being dampened due to excessive filtering, lessen filter
+   
