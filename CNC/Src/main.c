@@ -39,7 +39,7 @@
 #include "main.h"
 #include "stm32f0xx_hal.h"
 
-typedef unsigned int bool;
+typedef unsigned char bool;
 #define true 1
 #define false 0
 
@@ -138,13 +138,19 @@ void initLeds(void){
 
 void Setup_ADC()
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOB for ADC. Use PC0 for ADC input
+		RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for ADC. Use PC0 for ADC input
 	
 	//Set PC0 to General purpose in/out
 	GPIOC->MODER |= GPIO_MODER_MODER0;
+	//Set PC3 to General purpose in/out
+	GPIOC->MODER |= GPIO_MODER_MODER3;
+	
 	
 		//Set no pull up/down for PC0
 	GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR0;
+	//Set no pull up/down for PC3
+	GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR3;
+	
 	
 	// Enable ADC
 	RCC->APB2ENR |= RCC_APB2ENR_ADCEN;
@@ -153,27 +159,46 @@ void Setup_ADC()
 	ADC1->CFGR1 &= ~ADC_CFGR1_RES;
 	ADC1->CFGR1 |= ADC_CFGR1_RES_1;
 	
-	// Set Cont. Conversion mode
-	ADC1->CFGR1 |= ADC_CFGR1_CONT;
+	// Clear Cont. Conversion mode
+	ADC1->CFGR1 &= ~ADC_CFGR1_CONT;
 	
 	// Hardware triger disabled
 	ADC1->CFGR1 &= ~ADC_CFGR1_EXTEN;
 	
-	// Select/Enable the input channel 8 for PC0
+	// Disable all input channels
 	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
-	ADC1->CHSELR |= ADC_CHSELR_CHSEL10;
 	
 	// Calibrate
 	ADC1->CR |= ADC_CR_ADCAL;
 	while(ADC1->CR & ADC_CR_ADCAL){}
 	
-	
-	ADC1->ISR |= ADC_ISR_ADRDY;
+	//Enable ADC
 	ADC1->CR |= ADC_CR_ADEN;
+		
+	ADC1->ISR |= ADC_ISR_ADRDY;
 	while((ADC1->ISR & ADC_ISR_ADRDY) == 0){}
-	
+			
+}
+
+uint32_t Read_ADC_PC0()
+{
+	// Disable all input channels
+	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
+	// Select/Enable the input channel 10 for PC0
+	ADC1->CHSELR |= ADC_CHSELR_CHSEL10;
 	ADC1->CR |= ADC_CR_ADSTART;
+	return ADC1->DR;
+}
+
+uint32_t Read_ADC_PC3()
+{
+		// Disable all input channels
+	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
 	
+	// Select/Enable the input channel 10 for PC0
+	ADC1->CHSELR |= ADC_CHSELR_CHSEL13;
+	ADC1->CR |= ADC_CR_ADSTART;
+	return ADC1->DR;
 }
 
 /* USER CODE BEGIN PFP */
@@ -200,10 +225,10 @@ int main(void)
 
 	while(true)
 	{
-		(ADC1->DR > 32) ? turn_on_LED('o') : turn_off_LED('o');
-		(ADC1->DR > 64) ? turn_on_LED('b') : turn_off_LED('b');	
-		(ADC1->DR > 128) ? turn_on_LED('g') : turn_off_LED('g');	
-		(ADC1->DR > 200) ? turn_on_LED('r') : turn_off_LED('r');
+		(Read_ADC_PC0() > 64) ? turn_on_LED('o') : turn_off_LED('o');
+		(Read_ADC_PC0() > 200) ? turn_on_LED('b') : turn_off_LED('b');	
+		(Read_ADC_PC3() > 64) ? turn_on_LED('g') : turn_off_LED('g');	
+		(Read_ADC_PC3() > 200) ? turn_on_LED('r') : turn_off_LED('r');
 	}
 	
 }

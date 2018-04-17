@@ -311,8 +311,10 @@ Section Cross References
     main.o(i.main) refers to main.o(i.SystemClock_Config) for SystemClock_Config
     main.o(i.main) refers to main.o(i.initLeds) for initLeds
     main.o(i.main) refers to main.o(i.Setup_ADC) for Setup_ADC
+    main.o(i.main) refers to main.o(i.Read_ADC_PC0) for Read_ADC_PC0
     main.o(i.main) refers to main.o(i.turn_on_LED) for turn_on_LED
     main.o(i.main) refers to main.o(i.turn_off_LED) for turn_off_LED
+    main.o(i.main) refers to main.o(i.Read_ADC_PC3) for Read_ADC_PC3
     stm32f0xx_it.o(i.SysTick_Handler) refers to stm32f0xx_hal.o(i.HAL_IncTick) for HAL_IncTick
     stm32f0xx_it.o(i.SysTick_Handler) refers to stm32f0xx_hal_cortex.o(i.HAL_SYSTICK_IRQHandler) for HAL_SYSTICK_IRQHandler
     entry.o(.ARM.Collect$$$$00000000) refers (Special) to entry10a.o(.ARM.Collect$$$$0000000D) for __rt_final_cpp
@@ -603,18 +605,18 @@ Image Symbol Table
     ../Src/system_stm32f0xx.c                0x00000000   Number         0  system_stm32f0xx.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  uidiv.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
     ../clib/microlib/longlong.c              0x00000000   Number         0  llushr.o ABSOLUTE
     ..\Drivers\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal.c 0x00000000   Number         0  stm32f0xx_hal.o ABSOLUTE
     ..\Drivers\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_cortex.c 0x00000000   Number         0  stm32f0xx_hal_cortex.o ABSOLUTE
@@ -671,20 +673,22 @@ Image Symbol Table
     i.NVIC_SetPriority                       0x08000b38   Section        0  stm32f0xx_hal_cortex.o(i.NVIC_SetPriority)
     NVIC_SetPriority                         0x08000b39   Thumb Code   110  stm32f0xx_hal_cortex.o(i.NVIC_SetPriority)
     i.PendSV_Handler                         0x08000bb0   Section        0  stm32f0xx_it.o(i.PendSV_Handler)
-    i.SVC_Handler                            0x08000bb2   Section        0  stm32f0xx_it.o(i.SVC_Handler)
-    i.Setup_ADC                              0x08000bb4   Section        0  main.o(i.Setup_ADC)
-    i.SysTick_Handler                        0x08000c88   Section        0  stm32f0xx_it.o(i.SysTick_Handler)
-    i.SystemClock_Config                     0x08000c94   Section        0  main.o(i.SystemClock_Config)
-    i.SystemInit                             0x08000d14   Section        0  system_stm32f0xx.o(i.SystemInit)
-    i._Error_Handler                         0x08000d8c   Section        0  main.o(i._Error_Handler)
-    i.__scatterload_copy                     0x08000d90   Section       14  handlers.o(i.__scatterload_copy)
-    i.__scatterload_null                     0x08000d9e   Section        2  handlers.o(i.__scatterload_null)
-    i.__scatterload_zeroinit                 0x08000da0   Section       14  handlers.o(i.__scatterload_zeroinit)
-    i.initLeds                               0x08000db0   Section        0  main.o(i.initLeds)
-    i.main                                   0x08000e50   Section        0  main.o(i.main)
-    i.turn_off_LED                           0x08000ec0   Section        0  main.o(i.turn_off_LED)
-    i.turn_on_LED                            0x08000f3c   Section        0  main.o(i.turn_on_LED)
-    .constdata                               0x08000fb4   Section       24  system_stm32f0xx.o(.constdata)
+    i.Read_ADC_PC0                           0x08000bb4   Section        0  main.o(i.Read_ADC_PC0)
+    i.Read_ADC_PC3                           0x08000be4   Section        0  main.o(i.Read_ADC_PC3)
+    i.SVC_Handler                            0x08000c14   Section        0  stm32f0xx_it.o(i.SVC_Handler)
+    i.Setup_ADC                              0x08000c18   Section        0  main.o(i.Setup_ADC)
+    i.SysTick_Handler                        0x08000cec   Section        0  stm32f0xx_it.o(i.SysTick_Handler)
+    i.SystemClock_Config                     0x08000cf8   Section        0  main.o(i.SystemClock_Config)
+    i.SystemInit                             0x08000d78   Section        0  system_stm32f0xx.o(i.SystemInit)
+    i._Error_Handler                         0x08000df0   Section        0  main.o(i._Error_Handler)
+    i.__scatterload_copy                     0x08000df4   Section       14  handlers.o(i.__scatterload_copy)
+    i.__scatterload_null                     0x08000e02   Section        2  handlers.o(i.__scatterload_null)
+    i.__scatterload_zeroinit                 0x08000e04   Section       14  handlers.o(i.__scatterload_zeroinit)
+    i.initLeds                               0x08000e14   Section        0  main.o(i.initLeds)
+    i.main                                   0x08000eb4   Section        0  main.o(i.main)
+    i.turn_off_LED                           0x08000f20   Section        0  main.o(i.turn_off_LED)
+    i.turn_on_LED                            0x08000f9c   Section        0  main.o(i.turn_on_LED)
+    .constdata                               0x08001014   Section       24  system_stm32f0xx.o(.constdata)
     .data                                    0x20000000   Section        4  system_stm32f0xx.o(.data)
     .data                                    0x20000004   Section        4  stm32f0xx_hal.o(.data)
     STACK                                    0x20000008   Section     1024  startup_stm32f072xb.o(STACK)
@@ -766,23 +770,25 @@ Image Symbol Table
     HardFault_Handler                        0x08000b31   Thumb Code     4  stm32f0xx_it.o(i.HardFault_Handler)
     NMI_Handler                              0x08000b35   Thumb Code     2  stm32f0xx_it.o(i.NMI_Handler)
     PendSV_Handler                           0x08000bb1   Thumb Code     2  stm32f0xx_it.o(i.PendSV_Handler)
-    SVC_Handler                              0x08000bb3   Thumb Code     2  stm32f0xx_it.o(i.SVC_Handler)
-    Setup_ADC                                0x08000bb5   Thumb Code   200  main.o(i.Setup_ADC)
-    SysTick_Handler                          0x08000c89   Thumb Code    12  stm32f0xx_it.o(i.SysTick_Handler)
-    SystemClock_Config                       0x08000c95   Thumb Code   110  main.o(i.SystemClock_Config)
-    SystemInit                               0x08000d15   Thumb Code   102  system_stm32f0xx.o(i.SystemInit)
-    _Error_Handler                           0x08000d8d   Thumb Code     4  main.o(i._Error_Handler)
-    __scatterload_copy                       0x08000d91   Thumb Code    14  handlers.o(i.__scatterload_copy)
-    __scatterload_null                       0x08000d9f   Thumb Code     2  handlers.o(i.__scatterload_null)
-    __scatterload_zeroinit                   0x08000da1   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
-    initLeds                                 0x08000db1   Thumb Code   150  main.o(i.initLeds)
-    main                                     0x08000e51   Thumb Code   108  main.o(i.main)
-    turn_off_LED                             0x08000ec1   Thumb Code   120  main.o(i.turn_off_LED)
-    turn_on_LED                              0x08000f3d   Thumb Code   116  main.o(i.turn_on_LED)
-    AHBPrescTable                            0x08000fb4   Data          16  system_stm32f0xx.o(.constdata)
-    APBPrescTable                            0x08000fc4   Data           8  system_stm32f0xx.o(.constdata)
-    Region$$Table$$Base                      0x08000fcc   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08000fec   Number         0  anon$$obj.o(Region$$Table)
+    Read_ADC_PC0                             0x08000bb5   Thumb Code    44  main.o(i.Read_ADC_PC0)
+    Read_ADC_PC3                             0x08000be5   Thumb Code    44  main.o(i.Read_ADC_PC3)
+    SVC_Handler                              0x08000c15   Thumb Code     2  stm32f0xx_it.o(i.SVC_Handler)
+    Setup_ADC                                0x08000c19   Thumb Code   200  main.o(i.Setup_ADC)
+    SysTick_Handler                          0x08000ced   Thumb Code    12  stm32f0xx_it.o(i.SysTick_Handler)
+    SystemClock_Config                       0x08000cf9   Thumb Code   112  main.o(i.SystemClock_Config)
+    SystemInit                               0x08000d79   Thumb Code   102  system_stm32f0xx.o(i.SystemInit)
+    _Error_Handler                           0x08000df1   Thumb Code     4  main.o(i._Error_Handler)
+    __scatterload_copy                       0x08000df5   Thumb Code    14  handlers.o(i.__scatterload_copy)
+    __scatterload_null                       0x08000e03   Thumb Code     2  handlers.o(i.__scatterload_null)
+    __scatterload_zeroinit                   0x08000e05   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
+    initLeds                                 0x08000e15   Thumb Code   150  main.o(i.initLeds)
+    main                                     0x08000eb5   Thumb Code   108  main.o(i.main)
+    turn_off_LED                             0x08000f21   Thumb Code   120  main.o(i.turn_off_LED)
+    turn_on_LED                              0x08000f9d   Thumb Code   116  main.o(i.turn_on_LED)
+    AHBPrescTable                            0x08001014   Data          16  system_stm32f0xx.o(.constdata)
+    APBPrescTable                            0x08001024   Data           8  system_stm32f0xx.o(.constdata)
+    Region$$Table$$Base                      0x0800102c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x0800104c   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000000   Data           4  system_stm32f0xx.o(.data)
     uwTick                                   0x20000004   Data           4  stm32f0xx_hal.o(.data)
     __initial_sp                             0x20000408   Data           0  startup_stm32f072xb.o(STACK)
@@ -795,25 +801,25 @@ Memory Map of the image
 
   Image Entry point : 0x080000c1
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00000ff4, Max: 0x00020000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00001054, Max: 0x00020000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000fec, Max: 0x00020000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0000104c, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x08000000   0x08000000   0x000000c0   Data   RO            3    RESET               startup_stm32f072xb.o
-    0x080000c0   0x080000c0   0x00000000   Code   RO         1673  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
-    0x080000c0   0x080000c0   0x00000004   Code   RO         1680    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
-    0x080000c4   0x080000c4   0x00000004   Code   RO         1683    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
-    0x080000c8   0x080000c8   0x00000000   Code   RO         1685    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
-    0x080000c8   0x080000c8   0x00000000   Code   RO         1687    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
-    0x080000c8   0x080000c8   0x00000008   Code   RO         1688    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
-    0x080000d0   0x080000d0   0x00000000   Code   RO         1690    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
-    0x080000d0   0x080000d0   0x00000000   Code   RO         1692    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
-    0x080000d0   0x080000d0   0x00000004   Code   RO         1681    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
+    0x080000c0   0x080000c0   0x00000000   Code   RO         1685  * .ARM.Collect$$$$00000000  mc_p.l(entry.o)
+    0x080000c0   0x080000c0   0x00000004   Code   RO         1692    .ARM.Collect$$$$00000001  mc_p.l(entry2.o)
+    0x080000c4   0x080000c4   0x00000004   Code   RO         1695    .ARM.Collect$$$$00000004  mc_p.l(entry5.o)
+    0x080000c8   0x080000c8   0x00000000   Code   RO         1697    .ARM.Collect$$$$00000008  mc_p.l(entry7b.o)
+    0x080000c8   0x080000c8   0x00000000   Code   RO         1699    .ARM.Collect$$$$0000000A  mc_p.l(entry8b.o)
+    0x080000c8   0x080000c8   0x00000008   Code   RO         1700    .ARM.Collect$$$$0000000B  mc_p.l(entry9a.o)
+    0x080000d0   0x080000d0   0x00000000   Code   RO         1702    .ARM.Collect$$$$0000000D  mc_p.l(entry10a.o)
+    0x080000d0   0x080000d0   0x00000000   Code   RO         1704    .ARM.Collect$$$$0000000F  mc_p.l(entry11a.o)
+    0x080000d0   0x080000d0   0x00000004   Code   RO         1693    .ARM.Collect$$$$00002712  mc_p.l(entry2.o)
     0x080000d4   0x080000d4   0x0000001c   Code   RO            4    .text               startup_stm32f072xb.o
-    0x080000f0   0x080000f0   0x0000002c   Code   RO         1676    .text               mc_p.l(uidiv.o)
-    0x0800011c   0x0800011c   0x00000024   Code   RO         1694    .text               mc_p.l(init.o)
+    0x080000f0   0x080000f0   0x0000002c   Code   RO         1688    .text               mc_p.l(uidiv.o)
+    0x0800011c   0x0800011c   0x00000024   Code   RO         1706    .text               mc_p.l(init.o)
     0x08000140   0x08000140   0x0000000c   Code   RO         1260    i.HAL_GetTick       stm32f0xx_hal.o
     0x0800014c   0x0800014c   0x00000010   Code   RO         1264    i.HAL_IncTick       stm32f0xx_hal.o
     0x0800015c   0x0800015c   0x00000020   Code   RO         1265    i.HAL_Init          stm32f0xx_hal.o
@@ -831,35 +837,39 @@ Memory Map of the image
     0x08000aee   0x08000aee   0x00000002   PAD
     0x08000af0   0x08000af0   0x00000038   Code   RO          132    i.HAL_SYSTICK_Config  stm32f0xx_hal_cortex.o
     0x08000b28   0x08000b28   0x00000008   Code   RO          133    i.HAL_SYSTICK_IRQHandler  stm32f0xx_hal_cortex.o
-    0x08000b30   0x08000b30   0x00000004   Code   RO         1628    i.HardFault_Handler  stm32f0xx_it.o
-    0x08000b34   0x08000b34   0x00000002   Code   RO         1629    i.NMI_Handler       stm32f0xx_it.o
+    0x08000b30   0x08000b30   0x00000004   Code   RO         1640    i.HardFault_Handler  stm32f0xx_it.o
+    0x08000b34   0x08000b34   0x00000002   Code   RO         1641    i.NMI_Handler       stm32f0xx_it.o
     0x08000b36   0x08000b36   0x00000002   PAD
     0x08000b38   0x08000b38   0x00000078   Code   RO          134    i.NVIC_SetPriority  stm32f0xx_hal_cortex.o
-    0x08000bb0   0x08000bb0   0x00000002   Code   RO         1630    i.PendSV_Handler    stm32f0xx_it.o
-    0x08000bb2   0x08000bb2   0x00000002   Code   RO         1631    i.SVC_Handler       stm32f0xx_it.o
-    0x08000bb4   0x08000bb4   0x000000d4   Code   RO         1572    i.Setup_ADC         main.o
-    0x08000c88   0x08000c88   0x0000000c   Code   RO         1632    i.SysTick_Handler   stm32f0xx_it.o
-    0x08000c94   0x08000c94   0x00000080   Code   RO         1573    i.SystemClock_Config  main.o
-    0x08000d14   0x08000d14   0x00000078   Code   RO           13    i.SystemInit        system_stm32f0xx.o
-    0x08000d8c   0x08000d8c   0x00000004   Code   RO         1574    i._Error_Handler    main.o
-    0x08000d90   0x08000d90   0x0000000e   Code   RO         1698    i.__scatterload_copy  mc_p.l(handlers.o)
-    0x08000d9e   0x08000d9e   0x00000002   Code   RO         1699    i.__scatterload_null  mc_p.l(handlers.o)
-    0x08000da0   0x08000da0   0x0000000e   Code   RO         1700    i.__scatterload_zeroinit  mc_p.l(handlers.o)
-    0x08000dae   0x08000dae   0x00000002   PAD
-    0x08000db0   0x08000db0   0x000000a0   Code   RO         1575    i.initLeds          main.o
-    0x08000e50   0x08000e50   0x00000070   Code   RO         1576    i.main              main.o
-    0x08000ec0   0x08000ec0   0x0000007c   Code   RO         1577    i.turn_off_LED      main.o
-    0x08000f3c   0x08000f3c   0x00000078   Code   RO         1578    i.turn_on_LED       main.o
-    0x08000fb4   0x08000fb4   0x00000018   Data   RO           14    .constdata          system_stm32f0xx.o
-    0x08000fcc   0x08000fcc   0x00000020   Data   RO         1696    Region$$Table       anon$$obj.o
+    0x08000bb0   0x08000bb0   0x00000002   Code   RO         1642    i.PendSV_Handler    stm32f0xx_it.o
+    0x08000bb2   0x08000bb2   0x00000002   PAD
+    0x08000bb4   0x08000bb4   0x00000030   Code   RO         1572    i.Read_ADC_PC0      main.o
+    0x08000be4   0x08000be4   0x00000030   Code   RO         1573    i.Read_ADC_PC3      main.o
+    0x08000c14   0x08000c14   0x00000002   Code   RO         1643    i.SVC_Handler       stm32f0xx_it.o
+    0x08000c16   0x08000c16   0x00000002   PAD
+    0x08000c18   0x08000c18   0x000000d4   Code   RO         1574    i.Setup_ADC         main.o
+    0x08000cec   0x08000cec   0x0000000c   Code   RO         1644    i.SysTick_Handler   stm32f0xx_it.o
+    0x08000cf8   0x08000cf8   0x00000080   Code   RO         1575    i.SystemClock_Config  main.o
+    0x08000d78   0x08000d78   0x00000078   Code   RO           13    i.SystemInit        system_stm32f0xx.o
+    0x08000df0   0x08000df0   0x00000004   Code   RO         1576    i._Error_Handler    main.o
+    0x08000df4   0x08000df4   0x0000000e   Code   RO         1710    i.__scatterload_copy  mc_p.l(handlers.o)
+    0x08000e02   0x08000e02   0x00000002   Code   RO         1711    i.__scatterload_null  mc_p.l(handlers.o)
+    0x08000e04   0x08000e04   0x0000000e   Code   RO         1712    i.__scatterload_zeroinit  mc_p.l(handlers.o)
+    0x08000e12   0x08000e12   0x00000002   PAD
+    0x08000e14   0x08000e14   0x000000a0   Code   RO         1577    i.initLeds          main.o
+    0x08000eb4   0x08000eb4   0x0000006c   Code   RO         1578    i.main              main.o
+    0x08000f20   0x08000f20   0x0000007c   Code   RO         1579    i.turn_off_LED      main.o
+    0x08000f9c   0x08000f9c   0x00000078   Code   RO         1580    i.turn_on_LED       main.o
+    0x08001014   0x08001014   0x00000018   Data   RO           14    .constdata          system_stm32f0xx.o
+    0x0800102c   0x0800102c   0x00000020   Data   RO         1708    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08000fec, Size: 0x00000408, Max: 0x00004000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0800104c, Size: 0x00000408, Max: 0x00004000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08000fec   0x00000004   Data   RW           15    .data               system_stm32f0xx.o
-    0x20000004   0x08000ff0   0x00000004   Data   RW         1271    .data               stm32f0xx_hal.o
+    0x20000000   0x0800104c   0x00000004   Data   RW           15    .data               system_stm32f0xx.o
+    0x20000004   0x08001050   0x00000004   Data   RW         1271    .data               stm32f0xx_hal.o
     0x20000008        -       0x00000400   Zero   RW            1    STACK               startup_stm32f072xb.o
 
 
@@ -870,7 +880,7 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       860         52          0          0          0       3317   main.o
+       952         54          0          0          0       4115   main.o
         28          8        192          0       1024        596   startup_stm32f072xb.o
         98         14          0          4          0       2867   stm32f0xx_hal.o
        240         24          0          0          0       9694   stm32f0xx_hal_cortex.o
@@ -880,9 +890,9 @@ Image component sizes
        120         18         24          4          0     412275   system_stm32f0xx.o
 
     ----------------------------------------------------------------------
-      3696        210        248          8       1024     435808   Object Totals
+      3792        212        248          8       1024     436606   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         8          0          0          0          0          0   (incl. Padding)
+        12          0          0          0          0          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -920,15 +930,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      3828        226        248          8       1024     435088   Grand Totals
-      3828        226        248          8       1024     435088   ELF Image Totals
-      3828        226        248          8          0          0   ROM Totals
+      3924        228        248          8       1024     435798   Grand Totals
+      3924        228        248          8       1024     435798   ELF Image Totals
+      3924        228        248          8          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 4076 (   3.98kB)
+    Total RO  Size (Code + RO Data)                 4172 (   4.07kB)
     Total RW  Size (RW Data + ZI Data)              1032 (   1.01kB)
-    Total ROM Size (Code + RO Data + RW Data)       4084 (   3.99kB)
+    Total ROM Size (Code + RO Data + RW Data)       4180 (   4.08kB)
 
 ==============================================================================
 
