@@ -56,11 +56,12 @@ typedef unsigned char bool;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+volatile uint32_t debouncer;
 
 
 void setup_USART(void){
 	
-		// Enable USART4 Clock
+	// Enable USART1 Clock
 	//PA9 TX, PA10 RX
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
 	// Enable GPIOA Clock
@@ -78,13 +79,10 @@ void setup_USART(void){
 	GPIOA->AFR[1] &= ~(GPIO_AFRH_AFSEL10);
 	GPIOA->AFR[1] |= (0x1 << GPIO_AFRH_AFSEL10_Pos);
 	
-	
 	USART1->BRR = HAL_RCC_GetHCLKFreq()/115200;
 	USART1->CR1 |= USART_CR1_UE;
 	USART1->CR1 |= USART_CR1_RE;
 	USART1->CR1 |= USART_CR1_TE;
-	
-	
 	
 	// Push-pull
 	GPIOA->OTYPER = 0x00000;
@@ -95,7 +93,6 @@ void setup_USART(void){
 	
 	// No pull resistors
 	GPIOA->PUPDR = 0x0;
-	
 }
 
 void singleChar(char c){
@@ -259,6 +256,32 @@ int Read_ADC_PC3()
 	return ADC1->DR;
 }
 
+void  button_init(void) {
+    // Initialize PA0 for button input
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;                                          // Enable peripheral clock to GPIOA
+    GPIOA->MODER &= ~(GPIO_MODER_MODER0_0 | GPIO_MODER_MODER0_1);               // Set PA0 to input
+    GPIOC->OSPEEDR &= ~(GPIO_OSPEEDR_OSPEEDR0_0 | GPIO_OSPEEDR_OSPEEDR0_1);     // Set to low speed
+    GPIOC->PUPDR |= GPIO_PUPDR_PUPDR0_1;                                        // Set to pull-down
+}
+
+/* Called by SysTick Interrupt
+ * Performs button debouncing, changes wave type on button rising edge
+ * Updates frequency output from ADC value
+ */
+void HAL_SYSTICK_Callback(void) {
+    // Remember that this function is called by the SysTick interrupt
+    // You can't call any functions in here that use delay
+
+    debouncer = (debouncer << 1);
+    if(GPIOA->IDR & (1 << 0)) {
+        debouncer |= 0x1;
+    }
+
+    if(debouncer == 0x7FFFFFFF) {
+				turn_on_LED('o');
+    }
+}
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -275,13 +298,15 @@ int Read_ADC_PC3()
   */
 int main(void)
 {
+	debouncer = 0;
   HAL_Init();
   SystemClock_Config();
 
 	initLeds();
 	Setup_ADC();
 	setup_USART();
-
+	button_init();
+	
 	while(true)
 	{
 		HAL_Delay(500);
