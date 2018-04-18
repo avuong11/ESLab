@@ -69,6 +69,7 @@ int turn_off_LED(char ch);
 int turn_on_LED(char ch);
 int Read_ADC_PC3(void);
 int Read_ADC_PC0(void);
+void writeString(char* c);
 
 #define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 #ifdef __cplusplus

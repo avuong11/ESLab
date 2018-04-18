@@ -56,6 +56,63 @@ typedef unsigned char bool;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+
+
+void setup_USART(void){
+	
+		// Enable USART4 Clock
+	RCC->APB1ENR |= RCC_APB1ENR_USART4EN;
+	
+	// Enable GPIOA Clock
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	
+	// Set alternate function mode 10
+	GPIOA->MODER |= GPIO_MODER_MODER0;
+	GPIOA->MODER |= GPIO_MODER_MODER1;
+	GPIOA->MODER &= ~(GPIO_MODER_MODER0_0);
+	GPIOA->MODER &= ~(GPIO_MODER_MODER1_0);
+	
+	// Set AFRL 0100
+	GPIOA->AFR[0] &= ~(GPIO_AFRL_AFSEL0);
+	GPIOA->AFR[0] |= (0x4); // 0100 -> AF4
+	GPIOA->AFR[0] &= ~(GPIO_AFRL_AFSEL1);
+	GPIOA->AFR[0] |= (0x4 << 4);
+	
+	USART4->BRR = HAL_RCC_GetHCLKFreq()/115200;
+	USART4->CR1 |= USART_CR1_UE;
+	USART4->CR1 |= USART_CR1_RE;
+	USART4->CR1 |= USART_CR1_TE;
+	
+	
+	
+	// Push-pull
+	GPIOA->OTYPER = 0x00000;
+	
+	//High Speed
+	GPIOA->OSPEEDR = GPIO_OSPEEDR_OSPEEDR0;
+	GPIOA->OSPEEDR = GPIO_OSPEEDR_OSPEEDR1;
+	
+	// No pull resistors
+	GPIOA->PUPDR = 0x0;
+	
+}
+
+void singleChar(char c){
+	while((USART4->ISR & USART_ISR_TXE) == 0){}
+	USART4->TDR = c;
+}
+
+void writeString(char* c){
+	int i = 0;
+	while(1){
+		singleChar(c[i]);
+		i++;
+		if(c[i] == 0){
+			break;
+		}
+	}
+}
+
 int turn_off_LED(char ch)
 {
 		switch(ch)
@@ -109,7 +166,7 @@ int turn_on_LED(char ch)
 }
 
 void initLeds(void){
-		RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for LEDs
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for LEDs
 	
 	//Set PC6-PC9 to General purpose in/out
 	GPIOC->MODER &= ~(0xFF << GPIO_MODER_MODER6_Pos);
@@ -222,10 +279,12 @@ int main(void)
 
 	initLeds();
 	Setup_ADC();
+	setup_USART();
 
 	while(true)
 	{
-
+		HAL_Delay(500);
+		writeString("hello");
 	}
 	
 }
