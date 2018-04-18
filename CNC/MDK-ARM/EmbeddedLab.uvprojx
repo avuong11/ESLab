@@ -490,6 +490,26 @@
               <FileType>1</FileType>
               <FilePath>../Src/stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>motor_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\motor_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_control.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\motor_control.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\stm_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm_utils.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Src\stm_utils.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
