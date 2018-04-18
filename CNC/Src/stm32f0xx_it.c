@@ -34,6 +34,7 @@
 #include "stm32f0xx_hal.h"
 #include "stm32f0xx.h"
 #include "stm32f0xx_it.h"
+#include "main.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -113,7 +114,26 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+	static uint16_t count_a = 0;
+	count_a++;
+	if(count_a == 1000){
+		//(Read_ADC_PC0() > 64) ? turn_on_LED('o') : turn_off_LED('o');
+		(Read_ADC_PC0() > 200) ? turn_on_LED('b') : turn_off_LED('b');	
+		//(Read_ADC_PC3() > 64) ? turn_on_LED('g') : turn_off_LED('g');	
+		(Read_ADC_PC3() > 200) ? turn_on_LED('r') : turn_off_LED('r');
+		count_a = 0;
+	}
+	
+	static uint16_t count_b = 0;
+	count_b++;
+	if(count_b == 500){
+		turn_on_LED('g');
+	}
+	if(count_b == 1000){
+		turn_off_LED('g');
+		count_b = 0;
+	}
+	
   /* USER CODE END SysTick_IRQn 1 */
 }
 

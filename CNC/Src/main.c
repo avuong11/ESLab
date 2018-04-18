@@ -180,7 +180,7 @@ void Setup_ADC()
 			
 }
 
-uint32_t Read_ADC_PC0()
+int Read_ADC_PC0()
 {
 	// Disable all input channels
 	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
@@ -190,7 +190,7 @@ uint32_t Read_ADC_PC0()
 	return ADC1->DR;
 }
 
-uint32_t Read_ADC_PC3()
+int Read_ADC_PC3()
 {
 		// Disable all input channels
 	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
@@ -225,10 +225,7 @@ int main(void)
 
 	while(true)
 	{
-		(Read_ADC_PC0() > 64) ? turn_on_LED('o') : turn_off_LED('o');
-		(Read_ADC_PC0() > 200) ? turn_on_LED('b') : turn_off_LED('b');	
-		(Read_ADC_PC3() > 64) ? turn_on_LED('g') : turn_off_LED('g');	
-		(Read_ADC_PC3() > 200) ? turn_on_LED('r') : turn_off_LED('r');
+
 	}
 	
 }
