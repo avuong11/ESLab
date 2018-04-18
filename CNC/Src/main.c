@@ -282,8 +282,34 @@ void HAL_SYSTICK_Callback(void) {
     }
 }
 
+void setup_timer(void){
+	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+	
+	// 3k HZ
+	//TIM6->PSC = 28; // TODO: Change this!
+  //TIM6->ARR = 100; // TODO: Change this!
+	
+	TIM6->PSC = 7999; // TODO: Change this!
+  TIM6->ARR = 400; // TODO: Change this!
+
+  TIM6->DIER |= TIM_DIER_UIE;             // Enable update event interrupt
+  TIM6->CR1 |= TIM_CR1_CEN;               // Enable Timer
+
+  NVIC_EnableIRQ(TIM6_DAC_IRQn);          // Enable interrupt in NVIC
+  NVIC_SetPriority(TIM6_DAC_IRQn,2);
+}
+
+// Encoder interrupt to calculate motor speed, also manages PI controller
+void TIM6_DAC_IRQHandler(void) {
+
+		GPIOC->ODR ^= GPIO_ODR_9;   
+	
+    TIM6->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
+}
+
 /* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
+/* Private function prototyp
+es -----------------------------------------------*/
 
 /* USER CODE END PFP */
 
@@ -306,6 +332,7 @@ int main(void)
 	Setup_ADC();
 	setup_USART();
 	button_init();
+	setup_timer();
 	
 	while(true)
 	{

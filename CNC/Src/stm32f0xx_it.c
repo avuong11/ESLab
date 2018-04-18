@@ -123,17 +123,6 @@ void SysTick_Handler(void)
 		(Read_ADC_PC3() > 200) ? turn_on_LED('r') : turn_off_LED('r');
 		count_a = 0;
 	}
-	
-	static uint16_t count_b = 0;
-	count_b++;
-	if(count_b == 500){
-		turn_on_LED('g');
-	}
-	if(count_b == 1000){
-		turn_off_LED('g');
-		count_b = 0;
-	}
-	
   /* USER CODE END SysTick_IRQn 1 */
 }
 
