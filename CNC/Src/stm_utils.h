@@ -6,8 +6,11 @@ typedef unsigned char bool;
 #define true 1
 #define false 0
 
-#define TURN_ON(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BS_0 << PIN));
-#define TURN_OFF(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BR_0 << PIN));
+#define TURN_ON(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BS_0 << PIN))
+#define TURN_OFF(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BR_0 << PIN))
+#define TOGGLE_PIN(GPIO, PIN) (GPIO->ODR ^= (0x1 << PIN))
+#define READ_PIN(GPIO, PIN) (GPIO->IDR & (0x1 << PIN))
+#define RCC_GPIO_EN(GPIO) ((GPIO == GPIOA) ? RCC_AHBENR_GPIOAEN : ((GPIO == GPIOB) ? RCC_AHBENR_GPIOBEN : RCC_AHBENR_GPIOCEN))
 
 void SystemClock_Config(void);
 

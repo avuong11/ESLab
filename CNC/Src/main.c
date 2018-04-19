@@ -52,7 +52,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-	ADC_callback();
+	//ADC_callback();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -66,8 +66,8 @@ void TIM6_DAC_IRQHandler(void)
 int main(void)
 {
   HAL_Init();
-  SystemClock_Config();
-	Setup_motor_system();
+	SystemClock_Config();
+	setup_motor_system();
 	while(true)
 	{
 		HAL_Delay(10);

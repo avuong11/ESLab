@@ -27,6 +27,11 @@
 #define GPIO_PWM_DIR_Y			GPIOC
 #define PWM_DIR_Y_PIN_NUM		6
 
+#define GPIO_CAL_X					GPIOC
+#define CAL_X_PIN_NUM				4
+
+#define GPIO_CAL_Y					GPIOC
+#define CAL_Y_PIN_NUM				5
 
 typedef enum
 {
@@ -37,7 +42,7 @@ typedef enum
 /* 
 	Sets up the whole motor control system
 */
-void Setup_motor_system(void);
+void setup_motor_system(void);
 /*
 	Function that gets called during SysTick interrupt handler
 */
@@ -49,7 +54,7 @@ void PWM_control_callback(void);
 /*
 	Sets up the GPIOs that will be turned on and off to control the motor speed.
 */
-void Setup_GPIOs_for_PWM(void);
+void setup_GPIOs_for_PWM(void);
 /*
 	Adjusts the position in the X direction
 */
@@ -73,10 +78,18 @@ int calculate_desired_steps(int ADC_reading);
 /*
 	Sets up and calibrates the ADC peripheral
 */
-void Setup_ADC(void);
+void setup_ADC(void);
 /*
 	Reads a channel on the ADC
 */
 int Read_ADC_channel(uint32_t channel);
+/*
+	Sets up the GPIOs used for the buttons that are used for calibration
+*/
+void setup_cal_GPIOs(void);
+/*
+  Before starting the main program, calibrate the CNC setup so that its position is known
+*/
+void calibrate_CNC(void);
 
 #endif

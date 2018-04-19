@@ -10,14 +10,13 @@
 volatile int desired_steps_X;
 volatile int desired_steps_Y;
 
-void Setup_motor_system()
+void setup_motor_system()
 {
 	setup_USART();
-	Setup_GPIOs_for_PWM();
-	
-	// TODO Calibrate
-	
-	Setup_ADC();
+	setup_GPIOs_for_PWM();
+	setup_cal_GPIOs();
+	calibrate_CNC();
+	setup_ADC();
 	setup_timer_TIM6();
 }
 
@@ -155,9 +154,12 @@ void take_step_Y(direction dir)
 	TURN_OFF(GPIO_PWM_Y, PWM_Y_PIN_NUM); 
 }
 
-void Setup_GPIOs_for_PWM()
+void setup_GPIOs_for_PWM()
 {	
-	RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for LEDs
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_PWM_X); //Enable GPIOs for PWM
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_PWM_DIR_X);
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_PWM_Y);
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_PWM_DIR_Y);
 	
 	//Set PC6-PC9 to General purpose in/out
 	GPIO_PWM_X->MODER = (GPIO_PWM_X->MODER & ~(0x3 << (2 * PWM_X_PIN_NUM)))
@@ -194,9 +196,10 @@ void Setup_GPIOs_for_PWM()
 	TURN_OFF(GPIO_PWM_DIR_Y, PWM_DIR_Y_PIN_NUM);
 }
 
-void Setup_ADC()
+void setup_ADC()
 {
-	RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //Enable GPIOC for ADC. Use PC0 for ADC input
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_ADC_X); //Enable GPIOs for ADC
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_ADC_Y);
 	
 	//Set pins to General purpose in/out
 	GPIO_ADC_X->MODER |= (0x3 << (2 * ADC_X_PIN_NUM));
@@ -251,4 +254,37 @@ int Read_ADC_channel(uint32_t channel)
 	ret_val = ADC1->DR;
 	ADC1->CHSELR &= ~ADC_CHSELR_CHSEL;
 	return ret_val;
+}
+
+void setup_cal_GPIOs()
+{	
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_CAL_X);
+	GPIO_CAL_X->MODER &= ~(0x3 << (2 * CAL_X_PIN_NUM)); // Input mode
+	GPIO_CAL_X->OSPEEDR |= (0x3 << (2 * CAL_X_PIN_NUM)); // Fast speed
+	GPIO_CAL_X->PUPDR &= ~(0x3 << (2 * CAL_X_PIN_NUM));
+	GPIO_CAL_X->PUPDR |= (0x2 << (2 * CAL_X_PIN_NUM)); // Pull down resistor
+	
+	RCC->AHBENR |= RCC_GPIO_EN(GPIO_CAL_Y);
+	GPIO_CAL_Y->MODER &= ~(0x3 << (2 * CAL_Y_PIN_NUM)); // Input mode
+	GPIO_CAL_Y->OSPEEDR |= (0x3 << (2 * CAL_Y_PIN_NUM)); // Fast speed
+	GPIO_CAL_Y->PUPDR &= ~(0x3 << (2 * CAL_Y_PIN_NUM));
+	GPIO_CAL_Y->PUPDR |= (0x2 << (2 * CAL_Y_PIN_NUM)); // Pull down resistor
+	
+}
+
+void calibrate_CNC()
+{
+	while(!(READ_PIN(GPIO_CAL_X, CAL_X_PIN_NUM) && READ_PIN(GPIO_CAL_Y, CAL_Y_PIN_NUM)))
+	{
+		if(!READ_PIN(GPIO_CAL_X, CAL_X_PIN_NUM))
+		{
+			take_step_X(direction_backward);
+		}
+		if(!READ_PIN(GPIO_CAL_Y, CAL_Y_PIN_NUM))
+		{
+			take_step_Y(direction_backward);
+		}
+		HAL_Delay(1); // This is to ensure that the steps happen at 1 kHz intervals
+	}
+	writeString("Done Calibrating CNC\r\n");
 }
