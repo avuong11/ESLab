@@ -5,7 +5,7 @@ typedef enum
 {
 	direction_forward = 0,
 	direction_backward = 1
-}direction;
+} direction;
 
 /* 
 	Sets up the whole motor control system
@@ -24,20 +24,36 @@ void PWM_control_callback(void);
 */
 void Setup_GPIOs_for_PWM(void);
 /*
-	Makes one step on the motor connected to PC9
+	Adjusts the position in the X direction
 */
-void take_step_PC9(direction dir);
+void adjust_position_X(void);
+/*
+	Adjusts the position in the Y direction
+*/
+void adjust_position_Y(void);
+/*
+	Makes one step on the motor connected to PC9, either forward or backward
+*/
+void take_step_X(direction dir);
+/*
+	Makes one step on the motor connected to PC9, either forward or backward
+*/
+void take_step_Y(direction dir);
+/*
+	Takes an ADC reading and converts it into the desired steps set point
+*/
+int calculate_desired_steps(int ADC_reading);
 /*
 	Sets up and calibrates the ADC peripheral
 */
 void Setup_ADC(void);
 /*
-	Reads the input on PC0 using the ADC
+	Reads the input for the X axis using the ADC
 */
-int Read_ADC_PC0(void);
+int Read_ADC_X(void);
 /*
-	Reads the input on PC3 using the ADC
+	Reads the input for the Y axis using the ADC
 */
-int Read_ADC_PC3(void);
+int Read_ADC_Y(void);
 
 #endif
