@@ -2,31 +2,43 @@
 #include "stm32f0xx_hal.h"
 #include "stm_utils.h"
 
+volatile int ADC_reading_PC0;
+volatile int ADC_reading_PC3;
+
 void Setup_motor_system()
 {
 	initLeds();
 	Setup_ADC();
 	setup_USART();
-	button_init();
 	setup_timer_TIM6();
 }
 
-void SysTick_callback()
+void ADC_callback()
 {
 	static uint16_t count_a = 0;
-	count_a++;
-	if(count_a == 1000){
-		//(Read_ADC_PC0() > 64) ? turn_on_LED('o') : turn_off_LED('o');
-		(Read_ADC_PC0() > 200) ? turn_on_LED('b') : turn_off_LED('b');	
-		//(Read_ADC_PC3() > 64) ? turn_on_LED('g') : turn_off_LED('g');	
-		(Read_ADC_PC3() > 200) ? turn_on_LED('r') : turn_off_LED('r');
-		count_a = 0;
+	if(100 == count_a++)
+	{
+	   ADC_reading_PC0 = Read_ADC_PC0();
+		 ADC_reading_PC3 = Read_ADC_PC3();
+		 count_a = 0;
 	}
 }
 
 void PWM_control_callback(void)
 {
-	(void)toggle_LED('g');
+	if(ADC_reading_PC0 > 128)
+	{
+			take_step_PC9(direction_forward);
+	}
+}
+
+void take_step_PC9(direction dir)
+{
+	static volatile int count = 0;
+	(void)turn_on_LED('g');
+	while(100 > count++){}
+	count=0;
+	(void)turn_off_LED('g');
 }
 
 void Setup_GPIOs_for_PWM()

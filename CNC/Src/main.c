@@ -41,26 +41,6 @@
 #include "motor_control.h"
 #include "stm_utils.h"
 
-
-/* Called by SysTick Interrupt
- * Performs button debouncing, changes wave type on button rising edge
- * Updates frequency output from ADC value
- */
-void HAL_SYSTICK_Callback(void) {
-    // Remember that this function is called by the SysTick interrupt
-    // You can't call any functions in here that use delay
-		
-	  static volatile uint32_t debouncer = 0;
-    debouncer = (debouncer << 1);
-    if(GPIOA->IDR & (1 << 0)) {
-        debouncer |= 0x1;
-    }
-
-    if(debouncer == 0x7FFFFFFF) {
-						(void)toggle_LED('o');
-    }
-}
-
 /**
 * @brief This function handles System tick timer.
 */
@@ -72,7 +52,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-	SysTick_callback();
+	ADC_callback();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

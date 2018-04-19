@@ -171,7 +171,7 @@ void setup_timer_TIM6(void){
 	
 	// 6k HZ
 	TIM6->PSC = 28; // TODO: Change this!
-  TIM6->ARR = 35;// TODO: Change this!
+  TIM6->ARR = 80;// TODO: Change this!
 	
 	// 10 Hz
 	//TIM6->PSC = 7999; // TODO: Change this!
