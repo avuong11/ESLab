@@ -1,10 +1,14 @@
 #ifndef STM_UTILS_H
 #define STM_UTILS_H
+#include "stm32f0xx_hal.h"
 
 typedef unsigned char bool;
 #define true 1
 #define false 0
-	
+
+#define TURN_ON(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BS_0 << PIN));
+#define TURN_OFF(GPIO, PIN) (GPIO->BSRR |= (GPIO_BSRR_BR_0 << PIN));
+
 void SystemClock_Config(void);
 
 /*
@@ -38,6 +42,9 @@ bool toggle_LED(char ch);
 	Writes a string out the USART cable. Can be used for console debugging
 */
 void writeString(char* c);
+
+void int_to_str(char* str, uint32_t len, uint32_t val);
+
 /*
 	Sets up the User Button. Uses PA0.
 */

@@ -70,7 +70,7 @@ int main(void)
 	Setup_motor_system();
 	while(true)
 	{
-		HAL_Delay(500);
+		HAL_Delay(10);
 	}
 	
 }

@@ -184,6 +184,19 @@ void setup_timer_TIM6(void){
   NVIC_SetPriority(TIM6_DAC_IRQn,2);
 }
 
+void int_to_str(char* str, uint32_t len, uint32_t val)
+{
+  char i;
+
+  for(i=1; i<=len; i++)
+  {
+    str[len-i] = (char) ((val % 10UL) + '0');
+    val/=10;
+  }
+
+  str[i-1] = '\0';
+}
+
 
 // STM Code
 
