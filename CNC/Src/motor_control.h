@@ -7,6 +7,7 @@
 #ifndef MOTOR_CONTROL_H
 #define MOTOR_CONTROL_H
 #include "stm32f0xx_hal.h"
+#include "stm_utils.h"
 
 
 #define GPIO_ADC_X 					GPIOC
@@ -90,6 +91,6 @@ void setup_cal_GPIOs(void);
 /*
   Before starting the main program, calibrate the CNC setup so that its position is known
 */
-void calibrate_CNC(void);
+bool calibrate_CNC(void);
 
 #endif

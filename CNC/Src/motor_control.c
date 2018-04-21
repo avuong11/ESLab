@@ -15,18 +15,38 @@ void setup_motor_system()
 	setup_USART();
 	setup_GPIOs_for_PWM();
 	setup_cal_GPIOs();
-	calibrate_CNC();
 	setup_ADC();
+	desired_steps_X = 0;
+	desired_steps_Y = 0;
 	setup_timer_TIM6();
 }
 
 void ADC_callback()
 {
 	static uint16_t count_a = 0;
+	static const uint32_t threshold = 500;
 	if(100 == count_a++)
 	{
-	   desired_steps_X = calculate_desired_steps(Read_ADC_channel(ADC_CH_X));
-		 desired_steps_Y = calculate_desired_steps(Read_ADC_channel(ADC_CH_Y));
+		 uint32_t calculated_X = calculate_desired_steps(Read_ADC_channel(ADC_CH_X));
+		 uint32_t calculated_Y = calculate_desired_steps(Read_ADC_channel(ADC_CH_Y));
+	   if(desired_steps_X > calculated_X && desired_steps_X > (calculated_X + threshold))
+		 {
+			 desired_steps_X = calculated_X;
+		 }
+		 else if(desired_steps_X < calculated_X && desired_steps_X < (calculated_X - threshold))
+		 {
+			 desired_steps_X = calculated_X;
+		 }
+		 
+		 if(desired_steps_Y > calculated_Y && desired_steps_Y > (calculated_Y + threshold))
+		 {
+			 desired_steps_Y = calculated_Y;
+		 }
+		 else if(desired_steps_Y < calculated_Y && desired_steps_Y < (calculated_Y - threshold))
+		 {
+			 desired_steps_Y = calculated_Y;
+		 }
+		 
 		 count_a = 0;
 	}
 }
@@ -111,7 +131,7 @@ void adjust_position_Y()
 int calculate_desired_steps(int ADC_reading)
 {
 	//TODO calculate the steps from the ADC_reading
-	return ADC_reading;
+	return ADC_reading*87;
 }
 
 void take_step_X(direction dir)
@@ -272,19 +292,18 @@ void setup_cal_GPIOs()
 	
 }
 
-void calibrate_CNC()
+bool calibrate_CNC()
 {
-	while(!(READ_PIN(GPIO_CAL_X, CAL_X_PIN_NUM) && READ_PIN(GPIO_CAL_Y, CAL_Y_PIN_NUM)))
+	bool calibrated = true;
+	if(!READ_PIN(GPIO_CAL_X, CAL_X_PIN_NUM))
 	{
-		if(!READ_PIN(GPIO_CAL_X, CAL_X_PIN_NUM))
-		{
-			take_step_X(direction_backward);
-		}
-		if(!READ_PIN(GPIO_CAL_Y, CAL_Y_PIN_NUM))
-		{
-			take_step_Y(direction_backward);
-		}
-		HAL_Delay(1); // This is to ensure that the steps happen at 1 kHz intervals
+		take_step_X(direction_backward);
+	  calibrated = false;
 	}
-	writeString("Done Calibrating CNC\r\n");
+	if(!READ_PIN(GPIO_CAL_Y, CAL_Y_PIN_NUM))
+	{
+		take_step_Y(direction_backward);
+		calibrated = false;
+	}
+	return calibrated;
 }

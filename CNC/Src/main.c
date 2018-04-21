@@ -52,13 +52,21 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-	//ADC_callback();
+	ADC_callback();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
 void TIM6_DAC_IRQHandler(void) 
 {
-		PWM_control_callback();
+	  static bool calibrated = false;
+	  if(!calibrated)
+		{
+			calibrated = calibrate_CNC();
+		}
+		else
+		{
+			PWM_control_callback();
+		}
     TIM6->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
 }
 
