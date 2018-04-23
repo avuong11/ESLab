@@ -24,7 +24,7 @@ void setup_motor_system()
 void ADC_callback()
 {
 	static uint16_t count_a = 0;
-	static const uint32_t threshold = 500;
+	static const uint32_t threshold = 2500;
 	if(100 == count_a++)
 	{
 		 uint32_t calculated_X = calculate_desired_steps(Read_ADC_channel(ADC_CH_X));
@@ -76,7 +76,7 @@ void adjust_position_X()
 		//If desired_steps == current_step_count, do nothing
 	}
 	
-	if(10000 == count++)
+	if(5000 == count++)
 	{
 		static const int str_len = 16;
 		char str[str_len];
@@ -112,7 +112,7 @@ void adjust_position_Y()
 		//If desired_steps == current_step_count, do nothing
 	}
 	
-	if(10000 == count++)
+	if(5000 == count++)
 	{
 		static const int str_len = 16;
 		char str[str_len];
@@ -123,15 +123,14 @@ void adjust_position_Y()
 		int_to_str(str, str_len, current_step_count_Y);
 		writeString("Current steps Y: ");
 		writeString(str);
-		writeString("\r\n");
+		writeString("\r\n\r\n");
 		count = 0;
 	}
 }
 
 int calculate_desired_steps(int ADC_reading)
 {
-	//TODO calculate the steps from the ADC_reading
-	return ADC_reading*87;
+	return ADC_reading*75;
 }
 
 void take_step_X(direction dir)
@@ -280,13 +279,13 @@ void setup_cal_GPIOs()
 {	
 	RCC->AHBENR |= RCC_GPIO_EN(GPIO_CAL_X);
 	GPIO_CAL_X->MODER &= ~(0x3 << (2 * CAL_X_PIN_NUM)); // Input mode
-	GPIO_CAL_X->OSPEEDR |= (0x3 << (2 * CAL_X_PIN_NUM)); // Fast speed
+	GPIO_CAL_X->OSPEEDR &= ~(0x3 << (2 * CAL_X_PIN_NUM)); // Low speed
 	GPIO_CAL_X->PUPDR &= ~(0x3 << (2 * CAL_X_PIN_NUM));
 	GPIO_CAL_X->PUPDR |= (0x2 << (2 * CAL_X_PIN_NUM)); // Pull down resistor
 	
 	RCC->AHBENR |= RCC_GPIO_EN(GPIO_CAL_Y);
 	GPIO_CAL_Y->MODER &= ~(0x3 << (2 * CAL_Y_PIN_NUM)); // Input mode
-	GPIO_CAL_Y->OSPEEDR |= (0x3 << (2 * CAL_Y_PIN_NUM)); // Fast speed
+	GPIO_CAL_Y->OSPEEDR &= ~(0x3 << (2 * CAL_Y_PIN_NUM)); // Low speed
 	GPIO_CAL_Y->PUPDR &= ~(0x3 << (2 * CAL_Y_PIN_NUM));
 	GPIO_CAL_Y->PUPDR |= (0x2 << (2 * CAL_Y_PIN_NUM)); // Pull down resistor
 	

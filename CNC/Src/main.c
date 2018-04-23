@@ -59,9 +59,21 @@ void SysTick_Handler(void)
 void TIM6_DAC_IRQHandler(void) 
 {
 	  static bool calibrated = false;
+	  static uint32_t debouncer = 0;
 	  if(!calibrated)
 		{
-			calibrated = calibrate_CNC();
+			if(calibrate_CNC())
+			{
+				debouncer++;
+				if(debouncer > 100)
+				{
+					calibrated = true;
+				}
+			}
+			else
+			{
+				debouncer = 0;
+			}
 		}
 		else
 		{

@@ -29,10 +29,10 @@
 #define PWM_DIR_Y_PIN_NUM		6
 
 #define GPIO_CAL_X					GPIOC
-#define CAL_X_PIN_NUM				4
+#define CAL_X_PIN_NUM				5
 
 #define GPIO_CAL_Y					GPIOC
-#define CAL_Y_PIN_NUM				5
+#define CAL_Y_PIN_NUM				4
 
 typedef enum
 {
