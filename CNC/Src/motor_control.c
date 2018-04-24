@@ -9,6 +9,8 @@
 
 volatile int desired_steps_X;
 volatile int desired_steps_Y;
+volatile int current_step_count_X;
+volatile int current_step_count_Y;
 
 void setup_motor_system()
 {
@@ -21,34 +23,63 @@ void setup_motor_system()
 	setup_timer_TIM6();
 }
 
-void ADC_callback()
+void adjust_desired(uint32_t calculated, volatile int *desired, uint32_t* num_above, uint32_t* num_below)
 {
-	static uint16_t count_a = 0;
-	static const uint32_t threshold = 2500;
-	if(100 == count_a++)
+	static const uint32_t threshold = 1000;
+	static const uint32_t iterations_threshold = 100;
+	if( *desired > calculated && *desired > (calculated + threshold))
 	{
-		 uint32_t calculated_X = calculate_desired_steps(Read_ADC_channel(ADC_CH_X));
-		 uint32_t calculated_Y = calculate_desired_steps(Read_ADC_channel(ADC_CH_Y));
-	   if(desired_steps_X > calculated_X && desired_steps_X > (calculated_X + threshold))
-		 {
-			 desired_steps_X = calculated_X;
-		 }
-		 else if(desired_steps_X < calculated_X && desired_steps_X < (calculated_X - threshold))
-		 {
-			 desired_steps_X = calculated_X;
-		 }
-		 
-		 if(desired_steps_Y > calculated_Y && desired_steps_Y > (calculated_Y + threshold))
-		 {
-			 desired_steps_Y = calculated_Y;
-		 }
-		 else if(desired_steps_Y < calculated_Y && desired_steps_Y < (calculated_Y - threshold))
-		 {
-			 desired_steps_Y = calculated_Y;
-		 }
-		 
-		 count_a = 0;
+		*num_below = 0;
+		*num_above = *num_above + 1;
+		if(*num_above > iterations_threshold)
+		{
+			*desired = calculated;
+		}
 	}
+	else if(*desired < calculated && *desired < (calculated - threshold))
+	{
+	  *num_above = 0;
+		*num_below = *num_below + 1;
+		if(*num_below > iterations_threshold)
+		{
+			*desired = calculated;
+		}
+	}
+}
+
+void ADC_callback(void)
+{
+	uint32_t calculated_X = calculate_desired_steps(Read_ADC_channel(ADC_CH_X));
+	uint32_t calculated_Y = calculate_desired_steps(Read_ADC_channel(ADC_CH_Y));
+	static uint32_t above_threshold_X = 0;
+	static uint32_t below_threshold_X = 0;
+	static uint32_t above_threshold_Y = 0;
+	static uint32_t below_threshold_Y = 0;
+  adjust_desired(calculated_X, &desired_steps_X, &above_threshold_X, &below_threshold_X);
+	adjust_desired(calculated_Y, &desired_steps_Y, &above_threshold_Y, &below_threshold_Y);
+}
+
+void USART_setX(uint32_t x)
+{
+	desired_steps_X = calculate_desired_steps(x);
+}
+
+void USART_setY(uint32_t y)
+{
+	desired_steps_Y = calculate_desired_steps(y);
+}
+
+void print_position(void){
+		static const int str_len = 16;
+		char str[str_len];
+		int_to_str(str, str_len, current_step_count_X/75);
+		writeString("Current steps X: ");
+		writeString(str);
+		writeString("\r\n");
+		int_to_str(str, str_len, current_step_count_Y/75);
+		writeString("Current steps Y: ");
+		writeString(str);
+		writeString("\r\n\r\n");
 }
 
 void PWM_control_callback(void)
@@ -59,8 +90,8 @@ void PWM_control_callback(void)
 
 void adjust_position_X()
 {
-	static uint32_t count = 0;
-	static int current_step_count_X = 0;
+	//static uint32_t count = 0;
+	//static int current_step_count_X = 0;
 	if(desired_steps_X > current_step_count_X)
 	{
 		take_step_X(direction_forward);
@@ -76,7 +107,8 @@ void adjust_position_X()
 		//If desired_steps == current_step_count, do nothing
 	}
 	
-	if(5000 == count++)
+	// DEBUG CODE
+	/*if(5000 == count++)
 	{
 		static const int str_len = 16;
 		char str[str_len];
@@ -89,14 +121,14 @@ void adjust_position_X()
 		writeString(str);
 		writeString("\r\n");
 		count = 0;
-	}
+	}*/
 	
 }
 
 void adjust_position_Y()
 {
-	static uint32_t count = 0;
-	static int current_step_count_Y = 0;
+	//static uint32_t count = 0;
+	//static int current_step_count_Y = 0;
 	if(desired_steps_Y > current_step_count_Y)
 	{
 		take_step_Y(direction_forward);
@@ -112,7 +144,8 @@ void adjust_position_Y()
 		//If desired_steps == current_step_count, do nothing
 	}
 	
-	if(5000 == count++)
+	// DEBUG CODE
+	/*if(5000 == count++)
 	{
 		static const int str_len = 16;
 		char str[str_len];
@@ -125,7 +158,7 @@ void adjust_position_Y()
 		writeString(str);
 		writeString("\r\n\r\n");
 		count = 0;
-	}
+	}*/
 }
 
 int calculate_desired_steps(int ADC_reading)

@@ -46,6 +46,8 @@ bool toggle_LED(char ch);
 */
 void writeString(char* c);
 
+void singleChar(char c);
+
 void int_to_str(char* str, uint32_t len, uint32_t val);
 
 /*

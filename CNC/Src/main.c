@@ -41,6 +41,8 @@
 #include "motor_control.h"
 #include "stm_utils.h"
 
+int ADC_is_on;
+
 /**
 * @brief This function handles System tick timer.
 */
@@ -52,7 +54,8 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-	ADC_callback();
+	if(ADC_is_on)
+		ADC_callback();
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -82,14 +85,94 @@ void TIM6_DAC_IRQHandler(void)
     TIM6->SR &= ~TIM_SR_UIF;        // Acknowledge the interrupt
 }
 
+int strEq(char* str1, char* str2, int count){
+	int i = 0;
+	for(i = 0; i <= count; i++){
+		if(str1[i] != str2[i]){
+			return 0;
+		}
+	}
+	return 1;	
+}
+
+int atoi(char *str)
+{
+ int res = 0; // Initialize result
+ // Iterate through all characters of input string and
+ // update result
+ for (int i = 0; str[i] != '\0'; ++i) {
+     if (str[i]> '9' || str[i]<'0')
+         return -1;
+     res = res*10 + str[i] - '0';
+ }
+
+ // return result.
+ return res;
+}
 
 int main(void)
 {
   HAL_Init();
 	SystemClock_Config();
 	setup_motor_system();
+	ADC_is_on = 1;
+	int str_pos = 0;
+	char buffer[128] = "";
+	int x_axis = 0;
+	
 	while(true)
 	{
+		if(str_pos == 0 && ADC_is_on == 0){
+			writeString("Enter axis (x, y), distance (0-255), current position (current_position), or toggle ADC (on, off):\r\n");
+		}
+		else if(str_pos == 0){
+			writeString("Enter option for ADC(on, off) or current position (current_position):\r\n");
+		}
+		// Wait for character.
+		while((USART1->ISR & USART_ISR_RXNE) == 0){}
+		char c = USART1->RDR;
+		singleChar(c);
+			
+		if(c == '\n' || c == '\r'){
+				writeString("\r\n");
+				buffer[str_pos] = 0;
+				// Check word
+				
+				if(strEq(buffer, "off", str_pos)){
+					ADC_is_on = 0;
+				}
+				else if(strEq(buffer, "on", str_pos)){
+					ADC_is_on = 1;
+				}
+				else if(strEq(buffer, "current_position", str_pos)){
+					print_position();
+				}
+				else if(ADC_is_on == 0){
+					int new_position = atoi(buffer);
+					if(strEq(buffer, "y", str_pos)){
+						x_axis = 0;
+					}
+					else if(strEq(buffer, "x", str_pos)){
+						x_axis = 1;
+					}
+					else if(new_position >= 0 && new_position <= 255){
+							if(x_axis){
+								USART_setX(new_position);
+							}
+							else{
+								USART_setY(new_position);
+							}
+					}
+				}
+				else{
+					writeString("Error invalid input!!!!\r\n");
+				}
+				str_pos = 0;
+			}
+			else if(c != '\r'){
+				buffer[str_pos] = c;
+				str_pos++;
+		}
 		HAL_Delay(10);
 	}
 	

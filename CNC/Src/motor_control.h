@@ -40,6 +40,13 @@ typedef enum
 	direction_backward = 1
 } direction;
 
+
+void USART_setX(uint32_t x);
+
+void USART_setY(uint32_t y);
+
+void print_position(void);
+
 /* 
 	Sets up the whole motor control system
 */
